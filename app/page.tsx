@@ -1,216 +1,194 @@
-const RESULTADOS = [
-  {
-    id: 1,
-    loteria: 'Lotería Nacional',
-    sorteo: 'Mediodía',
-    numeros: ['14', '32', '57'],
-    color: '#1d4ed8',
-    verificado: true,
-  },
-  {
-    id: 2,
-    loteria: 'Lotería Nacional',
-    sorteo: 'Noche',
-    numeros: ['08', '45', '23'],
-    color: '#1d4ed8',
-    verificado: false,
-  },
-  {
-    id: 3,
-    loteria: 'Leidsa',
-    sorteo: 'Quiniela Pale',
-    numeros: ['67', '12', '89'],
-    color: '#15803d',
-    verificado: true,
-  },
-  {
-    id: 4,
-    loteria: 'Loteka',
-    sorteo: 'Quiniela',
-    numeros: ['34', '56', '78'],
-    color: '#b91c1c',
-    verificado: true,
-  },
-  {
-    id: 5,
-    loteria: 'Lotería Real',
-    sorteo: 'Quiniela Real',
-    numeros: ['91', '03', '44'],
-    color: '#7c3aed',
-    verificado: true,
-  },
-  {
-    id: 6,
-    loteria: 'La Primera',
-    sorteo: 'Matutino',
-    numeros: ['22', '55', '77'],
-    color: '#b45309',
-    verificado: true,
-  },
-  {
-    id: 7,
-    loteria: 'La Primera',
-    sorteo: 'Vespertino',
-    numeros: ['11', '66', '33'],
-    color: '#b45309',
-    verificado: true,
-  },
-  {
-    id: 8,
-    loteria: 'La Suerte',
-    sorteo: 'Mediodía',
-    numeros: ['48', '29', '61'],
-    color: '#0f766e',
-    verificado: true,
-  },
-];
+import { LOTERIAS, RESULTADOS_HOY, getLoteria } from '../lib/data';
+import ResultCard from './components/ResultCard';
+import AdBanner from './components/AdBanner';
+import Link from 'next/link';
+import type { Metadata } from 'next';
 
-const HORARIOS = [
-  { loteria: 'Lotería Nacional', sorteos: 'Lun, Mié, Vie — 12:55 PM y 8:55 PM', color: '#1d4ed8' },
-  { loteria: 'Leidsa', sorteos: 'Todos los días — 8:55 PM', color: '#15803d' },
-  { loteria: 'Loteka', sorteos: 'Todos los días — 7:55 PM', color: '#b91c1c' },
-  { loteria: 'Lotería Real', sorteos: 'Todos los días — 8:55 PM', color: '#7c3aed' },
-  { loteria: 'La Primera', sorteos: 'Lun-Sáb — 11:30 AM y 2:30 PM', color: '#b45309' },
-  { loteria: 'La Suerte', sorteos: 'Todos los días — 1:00 PM y 9:00 PM', color: '#0f766e' },
-];
+export const metadata: Metadata = {
+  title: 'Resultados Lotería Dominicana Hoy — Números Ganadores Verificados',
+  description: 'Resultados de la lotería dominicana en tiempo real. Números ganadores verificados de Lotería Nacional, Leidsa, Loteka, La Primera, La Suerte. Comprobador, estadísticas e histórico.',
+};
 
 export default function HomePage() {
-  const fecha = new Date().toLocaleDateString('es-DO', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  const fecha = new Date().toLocaleDateString('es-DO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const verificados = RESULTADOS_HOY.filter(r => r.verificado).length;
+  const pendientes = RESULTADOS_HOY.filter(r => !r.verificado).length;
+
+  const HERRAMIENTAS = [
+    { href: '/comprobar', icon: '🎯', label: 'Comprobar jugada', desc: 'Verifica si ganaste', color: '#3b82f6' },
+    { href: '/estadisticas', icon: '📊', label: 'Estadísticas', desc: 'Números calientes/fríos', color: '#8b5cf6' },
+    { href: '/historico', icon: '📅', label: 'Histórico', desc: 'Sorteos anteriores', color: '#f59e0b' },
+    { href: '/hoy-hace-anos', icon: '🔁', label: 'Hoy hace años', desc: 'Misma fecha, años pasados', color: '#10b981' },
+    { href: '/generador', icon: '🎲', label: 'Generador', desc: 'Combinaciones sugeridas', color: '#ef4444' },
+    { href: '/calculadora', icon: '🧮', label: 'Calculadora', desc: 'Probabilidades reales', color: '#06b6d4' },
+    { href: '/alertas', icon: '🔔', label: 'Alertas', desc: 'Notificaciones al instante', color: '#f97316' },
+    { href: '/cobrar-premios', icon: '💰', label: 'Cobrar premios', desc: 'Guía paso a paso', color: '#84cc16' },
+  ];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '2rem 1rem' }}>
 
       {/* Hero */}
-      <section className="text-center mb-10">
-        <h1 className="text-4xl sm:text-5xl font-black text-blue-900 mb-3">
-          Resultados Lotería Dominicana Hoy
-        </h1>
-        <p className="text-gray-500 text-lg capitalize">{fecha}</p>
-        <div className="mt-4 inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium">
-          <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-          Resultados actualizados
+      <section style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 999, padding: '4px 14px', fontSize: '0.75rem', color: '#60a5fa', marginBottom: 18 }}>
+          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#10b981', display: 'inline-block', animation: 'pulse-dot 1.5s ease-in-out infinite' }}></span>
+          Resultados actualizados en tiempo real
         </div>
-      </section>
+        <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 'clamp(1.9rem, 5vw, 3.2rem)', lineHeight: 1.12, marginBottom: 14, color: '#f0f4ff' }}>
+          Resultados Lotería<br />
+          <span style={{ background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            Dominicana Hoy
+          </span>
+        </h1>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: 22, textTransform: 'capitalize' }}>{fecha}</p>
 
-      {/* Anuncio */}
-      <div className="w-full bg-gray-100 rounded-xl flex items-center justify-center min-h-[90px] text-gray-400 text-sm mb-10">
-        Espacio publicitario
-      </div>
-
-      {/* Resultados */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">
-          🏆 Resultados de Hoy
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {RESULTADOS.map((r) => (
-            <div
-              key={r.id}
-              className="bg-white rounded-2xl shadow-md border border-gray-100 p-6"
-              style={{ borderTop: `4px solid ${r.color}` }}
-            >
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="font-bold text-lg" style={{ color: r.color }}>
-                    {r.loteria}
-                  </h3>
-                  <p className="text-gray-500 text-sm">{r.sorteo}</p>
-                </div>
-                {r.verificado && (
-                  <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">
-                    ✓ Verificado
-                  </span>
-                )}
-              </div>
-              <div className="flex gap-3 justify-center">
-                {r.numeros.map((n, i) => (
-                  <div
-                    key={i}
-                    className="w-16 h-16 rounded-full flex items-center justify-center text-white font-black text-2xl shadow-lg"
-                    style={{ backgroundColor: r.color }}
-                  >
-                    {n}
-                  </div>
-                ))}
-              </div>
+        <div style={{ display: 'inline-flex', gap: '1.5rem', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 14, padding: '0.85rem 1.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+          {[
+            { n: verificados, label: 'Verificados', color: '#10b981' },
+            { n: pendientes, label: 'Pendientes', color: '#f59e0b' },
+            { n: LOTERIAS.length, label: 'Loterías', color: '#f0f4ff' },
+            { n: LOTERIAS.reduce((a, l) => a + l.sorteos.length, 0), label: 'Sorteos/día', color: '#8b5cf6' },
+          ].map((s, i) => (
+            <div key={i} style={{ textAlign: 'center' }}>
+              <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: '1.5rem', color: s.color, lineHeight: 1 }}>{s.n}</div>
+              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 3 }}>{s.label}</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Anuncio medio */}
-      <div className="w-full bg-gray-100 rounded-xl flex items-center justify-center min-h-[90px] text-gray-400 text-sm mb-12">
-        Espacio publicitario
-      </div>
+      <AdBanner />
+      <div style={{ marginBottom: '2.5rem' }}></div>
 
-      {/* Horarios */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">
-          📅 Horarios de Sorteos
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {HORARIOS.map((h) => (
-            <div
-              key={h.loteria}
-              className="bg-white rounded-xl border border-gray-100 shadow-sm p-4"
-              style={{ borderLeft: `4px solid ${h.color}` }}
-            >
-              <div className="font-bold text-gray-800">{h.loteria}</div>
-              <div className="text-sm text-gray-500 mt-1">{h.sorteos}</div>
+      {/* Herramientas grid */}
+      <section style={{ marginBottom: '3rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+          <h2 style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: '1.3rem' }}>🛠 Herramientas</h2>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.85rem' }}>
+          {HERRAMIENTAS.map(h => (
+            <Link key={h.href} href={h.href} style={{ textDecoration: 'none' }}>
+              <div className="card" style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', height: '100%' }}>
+                <div style={{ width: 42, height: 42, borderRadius: 11, background: `${h.color}16`, border: `1px solid ${h.color}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>
+                  {h.icon}
+                </div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text)' }}>{h.label}</div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 1 }}>{h.desc}</div>
+                </div>
+                <span style={{ marginLeft: 'auto', color: h.color, fontSize: '0.85rem', flexShrink: 0 }}>→</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Resultados hoy */}
+      <section style={{ marginBottom: '3rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+          <h2 style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: '1.3rem' }}>🏆 Resultados de Hoy</h2>
+          <Link href="/resultados" style={{ fontSize: '0.8rem', color: 'var(--accent)', textDecoration: 'none' }}>Ver todos →</Link>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(275px, 1fr))', gap: '0.95rem' }}>
+          {RESULTADOS_HOY.map(r => {
+            const loteria = getLoteria(r.loteriaId);
+            if (!loteria) return null;
+            return <ResultCard key={r.id} resultado={r} loteria={loteria} />;
+          })}
+        </div>
+      </section>
+
+      <AdBanner />
+      <div style={{ marginBottom: '3rem' }}></div>
+
+      {/* Loterías hub */}
+      <section style={{ marginBottom: '3rem' }}>
+        <h2 style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: '1.3rem', marginBottom: '1.25rem' }}>🎰 Todas las Loterías</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.85rem' }}>
+          {LOTERIAS.map(l => (
+            <Link key={l.id} href={`/resultados/${l.id}`} style={{ textDecoration: 'none' }}>
+              <div className="card" style={{ padding: '1.1rem', borderLeft: `4px solid ${l.color}`, height: '100%' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                  <span style={{ fontSize: '1.4rem' }}>{l.logo}</span>
+                  <div>
+                    <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: '0.88rem', color: l.color }}>{l.nombre}</div>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>{l.sorteos.length} sorteo{l.sorteos.length > 1 ? 's' : ''}</div>
+                  </div>
+                </div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--accent)' }}>Ver resultados →</div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Feature highlights */}
+      <section style={{ marginBottom: '3rem' }}>
+        <h2 style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: '1.3rem', marginBottom: '1.25rem' }}>¿Por qué usar LoteríaRD?</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '0.85rem' }}>
+          {[
+            { icon: '⚡', title: 'Resultados al instante', desc: 'Publicamos los números minutos después de cada sorteo, antes que muchos otros portales.' },
+            { icon: '✅', title: 'Resultados verificados', desc: 'Cada resultado pasa por verificación con múltiples fuentes antes de marcarse como "Verificado".' },
+            { icon: '📱', title: 'Optimizado para móvil', desc: 'Diseñado primero para tu teléfono. Rápido, claro y sin anuncios invasivos.' },
+            { icon: '🔔', title: 'Alertas personalizadas', desc: 'Recibe notificaciones push o email exactamente de las loterías que te interesan.' },
+            { icon: '📊', title: 'Estadísticas reales', desc: 'Frecuencias, números calientes y fríos, probabilidades calculadas matemáticamente.' },
+            { icon: '🆓', title: '100% gratuito', desc: 'Acceso completo a todos los resultados, herramientas y estadísticas sin costo alguno.' },
+          ].map((f, i) => (
+            <div key={i} className="card" style={{ padding: '1.25rem' }}>
+              <div style={{ fontSize: '1.5rem', marginBottom: 8 }}>{f.icon}</div>
+              <h3 style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: '0.95rem', marginBottom: 6 }}>{f.title}</h3>
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.7 }}>{f.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* SEO Content */}
-      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-12">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">
+      <section className="card" style={{ padding: '2rem', marginBottom: '3rem' }}>
+        <h2 style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: '1.2rem', marginBottom: '1rem' }}>
           Resultados de Lotería Dominicana en Tiempo Real
         </h2>
-        <div className="text-gray-600 space-y-4 leading-relaxed">
-          <p>
-            Bienvenido al portal más completo de resultados de lotería de la República Dominicana.
-            Aquí encontrarás los números ganadores de todas las loterías dominicanas: Lotería Nacional,
-            Leidsa, Loteka, Lotería Real, La Primera y La Suerte.
+        <div style={{ color: 'var(--text-muted)', lineHeight: 1.8, fontSize: '0.875rem' }}>
+          <p style={{ marginBottom: 10 }}>
+            Bienvenido a <strong style={{ color: 'var(--text)' }}>LoteríaRD</strong>, el portal más completo de resultados de lotería de la República Dominicana.
+            Consulta los números ganadores verificados de todas las loterías: Lotería Nacional, Leidsa, Loteka, Lotería Real, La Primera y La Suerte.
           </p>
-          <p>
-            Nuestro sistema actualiza los resultados minutos después de cada sorteo para que siempre
-            tengas acceso inmediato a los números ganadores. Consulta el historial, estadísticas de
-            números frecuentes y horarios de todos los sorteos.
+          <p style={{ marginBottom: 10 }}>
+            Además de los resultados, ofrecemos: <Link href="/comprobar" style={{ color: '#3b82f6' }}>comprobador de jugadas</Link>,{' '}
+            <Link href="/estadisticas" style={{ color: '#3b82f6' }}>estadísticas de números calientes y fríos</Link>,{' '}
+            <Link href="/historico" style={{ color: '#3b82f6' }}>histórico de sorteos</Link>,{' '}
+            <Link href="/hoy-hace-anos" style={{ color: '#3b82f6' }}>resultados de esta fecha en años anteriores</Link>,{' '}
+            <Link href="/generador" style={{ color: '#3b82f6' }}>generador de combinaciones</Link>,{' '}
+            <Link href="/calculadora" style={{ color: '#3b82f6' }}>calculadora de probabilidades</Link> y{' '}
+            <Link href="/cobrar-premios" style={{ color: '#3b82f6' }}>guía para cobrar premios</Link>.
           </p>
         </div>
       </section>
 
       {/* FAQ */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Preguntas Frecuentes</h2>
-        <div className="space-y-3">
+      <section style={{ marginBottom: '3rem' }}>
+        <h2 style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: '1.3rem', marginBottom: '1.25rem' }}>Preguntas Frecuentes</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {[
-            { p: '¿Cuándo se actualizan los resultados?', r: 'Los resultados se actualizan minutos después de cada sorteo.' },
-            { p: '¿Son oficiales los resultados?', r: 'Los resultados son informativos. Siempre verifique con la lotería oficial correspondiente.' },
-            { p: '¿Qué loterías cubren?', r: 'Cubrimos Lotería Nacional, Leidsa, Loteka, Lotería Real, La Primera y La Suerte.' },
-            { p: '¿Cómo jugar quiniela?', r: 'Acude a cualquier banca autorizada, elige tu número del 00 al 99 y define tu monto de apuesta.' },
-          ].map((faq, i) => (
-            <details key={i} className="bg-white rounded-xl border border-gray-200 p-5 cursor-pointer">
-              <summary className="font-semibold text-gray-800 list-none flex justify-between">
-                {faq.p} <span className="text-blue-600">+</span>
+            { q: '¿Cuándo se actualizan los resultados?', a: 'Los resultados se publican como "Pendiente" minutos tras el sorteo oficial y se marcan "Verificado" cuando confirmamos con la fuente oficial y una fuente secundaria de respaldo.' },
+            { q: '¿Son oficiales los resultados?', a: 'Nuestros resultados son informativos. Para reclamaciones de premios, siempre verifique directamente con la lotería oficial correspondiente.' },
+            { q: '¿Cómo usar el comprobador de jugada?', a: 'Ve a "Comprobar", selecciona la lotería y el sorteo, ingresa tus números y el sistema calcula automáticamente tus aciertos y posibles premios.' },
+            { q: '¿Qué significa "Verificado" vs "Pendiente"?', a: '"Verificado" significa que el resultado fue confirmado con al menos 2 fuentes. "Pendiente" indica que el sorteo aún no ha ocurrido o el resultado está en proceso de verificación.' },
+            { q: '¿Puedo recibir notificaciones de resultados?', a: 'Sí. En la sección "Alertas" puedes activar notificaciones push en tu navegador o suscribirte por email para recibir los resultados al instante.' },
+            { q: '¿Cómo cobro mi premio si gané?', a: 'Consulta nuestra guía completa en "Cobrar premios" donde explicamos los pasos, documentos requeridos, plazos y información sobre impuestos.' },
+          ].map((f, i) => (
+            <details key={i} className="card" style={{ padding: '1rem 1.25rem' }}>
+              <summary style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 600, fontSize: '0.88rem', color: 'var(--text)' }}>
+                {f.q}
+                <span className="faq-icon" style={{ color: 'var(--accent)', fontSize: '1.2rem', marginLeft: 12, flexShrink: 0 }}>+</span>
               </summary>
-              <p className="mt-3 text-gray-600 text-sm">{faq.r}</p>
+              <p style={{ marginTop: 10, color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: 1.7 }}>{f.a}</p>
             </details>
           ))}
         </div>
       </section>
 
-      {/* Anuncio final */}
-      <div className="w-full bg-gray-100 rounded-xl flex items-center justify-center min-h-[90px] text-gray-400 text-sm">
-        Espacio publicitario
-      </div>
-
+      <AdBanner />
     </div>
   );
 }
