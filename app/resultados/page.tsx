@@ -1,6 +1,5 @@
 import { LOTERIAS, RESULTADOS_HOY, HISTORICO, getLoteria } from '../../lib/data';
 import ResultCard from '../components/ResultCard';
-import AdBanner from '../components/AdBanner';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 
