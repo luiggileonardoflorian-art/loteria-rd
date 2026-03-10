@@ -21,7 +21,7 @@ export default function ResultadosPage() {
         <p style={{ color: 'var(--text-muted)', textTransform: 'capitalize' }}>{fecha}</p>
       </div>
 
-      <AdBanner style={{ marginBottom: '2rem' }} />
+      <div style={{ marginBottom: '2rem' }}><AdBanner /></div>
       <div style={{ marginBottom: '2rem' }}></div>
 
       {LOTERIAS.map(loteria => {
