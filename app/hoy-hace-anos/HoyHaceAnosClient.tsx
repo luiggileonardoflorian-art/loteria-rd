@@ -31,9 +31,8 @@ export default function HoyHaceAnosClient() {
 
   const fechaBusqueda = `-${String(mes).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
   const resultados = HISTORICO_MULTIANIO.filter(r => r.fecha.endsWith(fechaBusqueda));
-  const anos = [...new Set(resultados.map(r => r.fecha.split('-')[0]))].sort().reverse();
-
-  const diasEnMes = new Date(2024, mes, 0).getDate();
+const anos = Array.from(new Set(resultados.map(r => String(r.fecha.split('-')[0])))).sort().reverse();
+const diasEnMes = new Date(2024, mes, 0).getDate();
 
   return (
     <div style={{ maxWidth: 1000, margin: '0 auto', padding: '2rem 1rem' }}>
