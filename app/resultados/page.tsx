@@ -21,9 +21,6 @@ export default function ResultadosPage() {
         <p style={{ color: 'var(--text-muted)', textTransform: 'capitalize' }}>{fecha}</p>
       </div>
 
-      <div style={{ marginBottom: '2rem' }}><AdBanner /></div>
-      <div style={{ marginBottom: '2rem' }}></div>
-
       {LOTERIAS.map(loteria => {
         const resultados = RESULTADOS_HOY.filter(r => r.loteriaId === loteria.id);
         const historico = HISTORICO.filter(r => r.loteriaId === loteria.id).slice(0, 3);
